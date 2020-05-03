@@ -4,17 +4,19 @@ export default class DNA {
   genes: Vector[];
 
   constructor(
-    public population: number = 150,
+    public lifeTime: number = 150,
     public maxVelocity: number = 0.1
   ) {}
 
-  populate() {
+  populate(): DNA {
     this.genes = [];
 
-    for (let i = 0; i < this.population; i++) {
+    for (let i = 0; i < this.lifeTime; i++) {
       const vector = randomGene(this.maxVelocity);
       this.genes.push(vector);
     }
+
+    return this;
   }
 
   crossOver(partner: DNA, mutationRate: number = 0.01): DNA {

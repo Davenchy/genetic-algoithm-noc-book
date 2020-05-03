@@ -14,6 +14,8 @@ function setup() {
   lifeTime = 500;
   lifeCounter = 0;
 
+  target = new Target();
+
   population = new Population({ target, lifeTime });
 }
 

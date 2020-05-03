@@ -39,9 +39,9 @@ export default class Population {
   }
 
   fitness() {
-    const { location: tLocation } = this.target;
+    const { location: loc } = this.options.target;
     const calculateFitness = r => {
-      const dist = Vector.dist(tLocation, r.location);
+      const dist = Vector.dist(loc, r.location);
       r.fitness = pow(1 / dist, 2);
     };
     this.rockets.forEach(calculateFitness);

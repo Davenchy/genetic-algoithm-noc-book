@@ -5,7 +5,7 @@ export default class Target {
   radius: number = 10;
   color: number[] = [190, 0, 100];
 
-  constructor(location: Vector = null) {
+  constructor(location?: Vector) {
     if (location) this.location = location;
     else {
       const x = random(this.radius, width - this.radius);

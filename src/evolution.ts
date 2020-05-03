@@ -1,3 +1,7 @@
+/**
+ * Important this is an old code will be modified to be suitable for the smart rockets projects
+ */
+
 export const dict = "abcdefghijklmnopqrstuvwxyz ";
 export const randomIndex = (len: number): number =>
   Math.round(Math.random() * (len - 1));

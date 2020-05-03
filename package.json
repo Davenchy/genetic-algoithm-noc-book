@@ -1,10 +1,10 @@
 {
-  "name": "genetic-algorithm",
+  "name": "genetic-algorithm-smart-rockets",
   "version": "1.0.0",
-  "description": "This is my result by following chapter 9 of nature of code book by Daniel Shiffman",
+  "description": "This is my result by following chapter 9 - section 9.10 of nature of code book by Daniel Shiffman",
   "main": "index.js",
   "scripts": {
-    "start": "parcel watch -t node src/main.ts",
+    "start": "parcel index.html",
     "test": "echo \"no test specified\""
   },
   "keywords": [
@@ -14,11 +14,15 @@
     "genetic",
     "algorithm",
     "noc",
-    "book"
+    "book",
+    "smart",
+    "rockets"
   ],
   "author": "Davenchy",
   "license": "MIT",
   "dependencies": {
+    "@types/p5": "^0.9.0",
+    "p5": "^1.0.0",
     "parcel-bundler": "^1.12.4"
   },
   "devDependencies": {

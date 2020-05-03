@@ -1,0 +1,19 @@
+{
+  "name": "genetic-algorithm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel watch -t node src/main.ts",
+    "test": "echo \"no test specified\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "parcel-bundler": "^1.12.4"
+  },
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  }
+}

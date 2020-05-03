@@ -17,7 +17,7 @@ export default class DNA {
     }
   }
 
-  crossOver(partner: DNA, mutationRate: 0.01): DNA {
+  crossOver(partner: DNA, mutationRate: number = 0.01): DNA {
     const getGene = (index: number, r: number = Math.random()): Vector =>
       r < mutationRate
         ? randomGene(this.maxVelocity)

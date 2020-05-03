@@ -1,14 +1,14 @@
 {
   "name": "genetic-algorithm",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is my result by following chapter 9 of nature of code book by Daniel Shiffman",
   "main": "index.js",
   "scripts": {
     "start": "parcel watch -t node src/main.ts",
     "test": "echo \"no test specified\""
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["nature", "of", "code", "genetic", "algorithm", "noc", "book"],
+  "author": "Davenchy",
   "license": "ISC",
   "dependencies": {
     "parcel-bundler": "^1.12.4"

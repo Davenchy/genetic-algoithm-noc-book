@@ -3,22 +3,37 @@ import Target from "./target";
 import { Vector } from "p5";
 import DNA from "./dna";
 
-export default class Population {
-  rockets: Rocket[];
-  matingPool: Rocket[];
-  generation: number;
+interface PopulationOptions {
+  target: Target;
+  mutationRate?: number;
+  population?: number;
+  lifeTime?: number;
+  maxVelocity?: number;
+}
 
-  constructor(
-    public target: Target,
-    public mutationRate: number = 0.01,
-    public population: number = 150
-  ) {
+export default class Population {
+  rockets: Rocket[] = [];
+  matingPool: Rocket[] = [];
+  generation: number = 0;
+  options: PopulationOptions;
+
+  constructor(options: PopulationOptions) {
+    this.options = Object.assign(
+      {
+        mutationRate: 0.01,
+        population: 150,
+        lifeTime: 500
+      },
+      options
+    );
     this.populate();
   }
 
   populate() {
-    for (let i = 0; i < this.population; i++) {
+    const { population: pop, lifeTime, maxVelocity } = this.options;
+    for (let i = 0; i < pop; i++) {
       const rocket = new Rocket();
+      rocket.dna = new DNA(lifeTime, maxVelocity).populate();
       this.rockets.push(rocket);
     }
   }

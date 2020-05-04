@@ -9,30 +9,39 @@ interface PopulationOptions {
   population?: number;
   lifeTime?: number;
   maxVelocity?: number;
+  initLocation?: Vector;
+}
+
+interface MatingCard {
+  score: number;
+  rocket: Rocket;
 }
 
 export default class Population {
   rockets: Rocket[] = [];
-  matingPool: Rocket[] = [];
+  matingPool: MatingCard[] = [];
   generation: number = 0;
+  totalFitness: number = 0;
   options: PopulationOptions;
+  bestRocket: Rocket;
 
   constructor(options: PopulationOptions) {
     this.options = Object.assign(
       {
         mutationRate: 0.01,
         population: 150,
-        lifeTime: 500
+        lifeTime: 500,
+        initLocation: createVector(width / 2, height - 100)
       },
       options
     );
-    this.populate();
-  }
 
-  populate() {
     const { population: pop, lifeTime, maxVelocity } = this.options;
     for (let i = 0; i < pop; i++) {
-      const rocket = new Rocket();
+      const rocket = new Rocket(
+        this.options.target,
+        this.options.initLocation.copy()
+      );
       rocket.dna = new DNA(lifeTime, maxVelocity).populate();
       this.rockets.push(rocket);
     }
@@ -41,13 +50,14 @@ export default class Population {
   fitness() {
     const { location: loc } = this.options.target;
     const calculateFitness = r => {
-      const dist = Vector.dist(loc, r.location);
-      r.fitness = pow(1 / dist, 2);
+      r.calculateFitness();
+      if (!this.bestRocket || this.bestRocket.fitness < r.fitness)
+        this.bestRocket = r;
     };
     this.rockets.forEach(calculateFitness);
   }
 
-  getTotalFitness(): number {
+  get getTotalFitness(): number {
     const totalFitness = this.rockets.reduce(
       ({ fitness: a }, { fitness: b }) => ({
         fitness: a + b
@@ -59,27 +69,49 @@ export default class Population {
 
   selection() {
     this.matingPool.length = 0;
-    const totalFitness = this.getTotalFitness();
+    this.totalFitness = this.getTotalFitness;
 
     this.rockets.forEach(rocket => {
-      const normalizedFitness = rocket.fitness / totalFitness;
-      const amount: number = round(normalizedFitness * 100);
-      for (let i = 0; i < amount; i++) this.matingPool.push(rocket);
+      const normalizedFitness = rocket.fitness / this.totalFitness;
+      const matingCard: MatingCard = {
+        score: normalizedFitness,
+        rocket
+      };
+
+      this.matingPool.push(matingCard);
     });
+
+    this.matingPool.sort(({ score: a }, { score: b }) =>
+      a === b ? 0 : a > b ? 1 : -1
+    );
   }
 
   pickRocketDNA(): DNA {
-    return this.matingPool[randomIndex(this.matingPool.length)].dna;
+    const pointer = Math.random();
+    const card: MatingCard = this.matingPool.filter(c => c.score >= pointer)[0];
+    if (!card) return this.pickRocketDNA();
+    return card.rocket.dna;
   }
 
   reproduction() {
-    this.rockets.forEach(rocket => {
+    this.generation++;
+    this.rockets.length = 0;
+
+    for (let i = 0; i < this.options.population; i++) {
       const a: DNA = this.pickRocketDNA();
       let b: DNA = this.pickRocketDNA();
       while (a === b) b = this.pickRocketDNA();
-      const newDNA = a.crossOver(b, this.mutationRate);
-      rocket.dna = newDNA;
-    });
+
+      const childDNA = a.crossOver(b, this.options.mutationRate);
+
+      const rocket = new Rocket(
+        this.options.target,
+        this.options.initLocation.copy()
+      );
+
+      rocket.dna = childDNA;
+      this.rockets.push(rocket);
+    }
   }
 
   live() {

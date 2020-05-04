@@ -20,6 +20,8 @@ export default class Rocket {
   rocketColor: Color;
   strokeWeight: number;
 
+  freeze: boolean = false;
+
   constructor(
     public target: Target,
     location?: Vector,
@@ -97,13 +99,16 @@ export default class Rocket {
   bounce: number = 1;
   geneCounter: number = 0;
   run() {
-    if (!this.hitTarget) {
+    if (!this.freeze) {
       const gene = this.dna.genes[this.geneCounter];
       this.applyForce(gene);
-    } else {
-      this.velocity.mult(0);
+    } else this.velocity.mult(0);
+
+    if (this.hitTarget) {
       this.bounce++;
+      this.freeze = true;
     }
+
     this.geneCounter++;
     this.update();
   }

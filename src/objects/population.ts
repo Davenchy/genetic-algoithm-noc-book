@@ -2,6 +2,7 @@ import Rocket from "./rocket";
 import Target from "./target";
 import { Vector } from "p5";
 import DNA from "./dna";
+import Block from "./block";
 
 interface PopulationOptions {
   target: Target;
@@ -10,6 +11,7 @@ interface PopulationOptions {
   lifeTime?: number;
   maxVelocity?: number;
   initLocation?: Vector;
+  blocks: Block[];
 }
 
 interface MatingCard {
@@ -37,6 +39,10 @@ export default class Population {
     );
 
     const { population: pop, lifeTime, maxVelocity } = this.options;
+
+    if (pop < 2)
+      throw new Error("at least 2 populations for the reproduction process");
+
     for (let i = 0; i < pop; i++) {
       const rocket = new Rocket(
         this.options.target,
@@ -48,7 +54,6 @@ export default class Population {
   }
 
   fitness() {
-    const { location: loc } = this.options.target;
     const calculateFitness = r => {
       r.calculateFitness();
       if (!this.bestRocket || this.bestRocket.fitness < r.fitness)
@@ -86,10 +91,16 @@ export default class Population {
     );
   }
 
-  pickRocketDNA(): DNA {
+  pickRocketDNA(level: number = 0): DNA {
+    if (this.matingPool.length === 0) return;
     const pointer = Math.random();
-    const card: MatingCard = this.matingPool.filter(c => c.score >= pointer)[0];
-    if (!card) return this.pickRocketDNA();
+    let card: MatingCard;
+
+    if (level >= 10)
+      card = this.matingPool[randomIndex(this.matingPool.length)];
+    else card = this.matingPool.filter(c => c.score >= pointer)[0];
+
+    if (!card) return this.pickRocketDNA(level + 1);
     return card.rocket.dna;
   }
 
@@ -116,6 +127,16 @@ export default class Population {
 
   live() {
     this.rockets.forEach(rocket => rocket.run());
+  }
+
+  checkBlocks() {
+    this.options.blocks.forEach(block => {
+      this.rockets.forEach(rocket => {
+        if (rocket.freeze) return;
+        const isTouched = block.isTouch(rocket);
+        if (isTouched) rocket.freeze = true;
+      });
+    });
   }
 }
 

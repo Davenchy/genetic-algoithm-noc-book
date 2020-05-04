@@ -85,7 +85,8 @@ export default class Rocket {
   }
 
   calculateFitness() {
-    this.fitness = pow(this.bounce / this.dist, 2);
+    if (!this.freeze) this.fitness = pow(this.bounce / this.dist, 2);
+    else this.fitness *= 0.1;
   }
 
   get dist(): number {

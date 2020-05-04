@@ -3,13 +3,12 @@ import { Vector } from "p5";
 export default class DNA {
   genes: Vector[];
 
-  constructor(
-    public lifeTime: number = 150,
-    public maxVelocity: number = 0.1
-  ) {}
+  constructor(public lifeTime: number = 150, public maxVelocity: number = 0.1) {
+    this.genes = [];
+  }
 
   populate(): DNA {
-    this.genes = [];
+    this.genes.length = 0;
 
     for (let i = 0; i < this.lifeTime; i++) {
       const vector = randomGene(this.maxVelocity);
@@ -28,7 +27,7 @@ export default class DNA {
         : partner.genes[index];
 
     const childDNA = new DNA();
-    for (let i = 0; i < this.population; i++) childDNA.genes.push(getGene(i));
+    for (let i = 0; i < this.lifeTime; i++) childDNA.genes.push(getGene(i));
     return childDNA;
   }
 }

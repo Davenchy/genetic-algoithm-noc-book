@@ -1,4 +1,4 @@
-function start() {
+function setup() {
   createCanvas(600, 600);
   background(100);
 }
@@ -6,3 +6,6 @@ function start() {
 function draw() {
   background(100);
 }
+
+window.setup = setup;
+window.draw = draw;

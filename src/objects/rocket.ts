@@ -1,7 +1,12 @@
-import { Vector } from "p5";
+import { Vector, Color } from "p5";
 import Target from "./target";
 import DNA from "./dna";
-import { Color } from "p5";
+
+interface RocketOptions {
+  size?: number;
+  rocketColor?: Color;
+  strokeWeight?: number;
+}
 
 export default class Rocket {
   dna: DNA;
@@ -13,11 +18,25 @@ export default class Rocket {
 
   size: number;
   rocketColor: Color;
+  strokeWeight: number;
 
-  constructor(location?: Vector, size?: number, rocketColor?: Color) {
-    this.location = location || Vector.random2D();
-    this.size = size || random(1, 3);
-    this.rocketColor = rocketColor || color(10, 200, 100);
+  constructor(
+    public target: Target,
+    location?: Vector,
+    options?: RocketOptions
+  ) {
+    this.location = location || randomLocation();
+
+    Object.assign(
+      this,
+      {
+        size: random(25, 40),
+        rocketColor: color(10, 200, 100),
+        strokeWeight: 3
+      },
+      options || {}
+    );
+
     this.velocity = createVector();
     this.acceleration = createVector();
   }
@@ -33,38 +52,61 @@ export default class Rocket {
   }
 
   draw() {
-    const { location, size, rocketColor: color } = this;
+    const { location, size, rocketColor: color, strokeWeight: w } = this;
     const { x, y } = location;
-
-    const p1 = {
-      x: x - size / 2,
-      y
-    };
-
-    const p2 = {
-      x,
-      y: y - size
-    };
-
-    const p3 = {
-      x: x + size / 2,
-      y
-    };
 
     noStroke();
     fill(color);
-    triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+    circle(x, y, size / 2);
+
+    // to draw a triangle but for later
+    const widthConstant = 0.4;
+    // const p1 = {
+    //   x: x - size * widthConstant,
+    //   y
+    // };
+
+    // const p2 = {
+    //   x,
+    //   y: y - size
+    // };
+
+    // const p3 = {
+    //   x: x + size * widthConstant,
+    //   y
+    // };
+
+    // noFill();
+    // stroke(color);
+    // strokeWeight(w);
+    // triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
   }
 
-  calculateFitness(target: Target) {
-    const dist = Vector.dist(this.location, target.location);
-    this.fitness = pow(1 / dist, 2);
+  calculateFitness() {
+    this.fitness = pow(this.bounce / this.dist, 2);
   }
 
+  get dist(): number {
+    return Vector.dist(this.location, this.target.location);
+  }
+
+  get hitTarget(): boolean {
+    return this.dist <= this.target.radius * 2;
+  }
+
+  bounce: number = 1;
   geneCounter: number = 0;
   run() {
-    this.applyForce(this.dna.genes[this.geneCounter]);
+    if (!this.hitTarget) {
+      const gene = this.dna.genes[this.geneCounter];
+      this.applyForce(gene);
+    } else {
+      this.velocity.mult(0);
+      this.bounce++;
+    }
     this.geneCounter++;
     this.update();
   }
 }
+
+const randomLocation = () => createVector(random(0, width), random(0, height));
